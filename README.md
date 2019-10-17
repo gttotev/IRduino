@@ -6,6 +6,6 @@ even offer the same functionality as the remote. When one of
 my remotes went inexplicably missing, and I decided something had
 to be done.
 
-## Acknowledgement
-Thank you Ken Shirriff, z3t0 for the wonderful
+## Acknowledgements
+Many thanks to Ken Shirriff, z3t0, and all contributors for the wonderful
 [Arduino-IRremote library](https://github.com/z3t0/Arduino-IRremote).
