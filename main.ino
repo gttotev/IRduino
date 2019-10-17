@@ -1,8 +1,12 @@
 #include <IRremote.h>
 
 #define BAUD 9600
+#define RECV_PIN 11
+#define RECV_DELAY 750
 
 IRsend irsend;
+IRrecv irrecv(RECV_PIN);
+decode_results results;
 
 // Command #1: CURSOR ENTER
 // Protocol: necx1, Parameters: S=45U D=45U F=88U
@@ -77,58 +81,64 @@ static void sendRaw(const uint16_t data_P[], size_t length, uint16_t frequency) 
 void setup() {
     Serial.begin(BAUD);
     Serial.println(F("IRduino is starting up!"));
+    irrecv.enableIRIn();
 }
 
 void loop() {
-    Serial.println(F("Enter number of signal to send (1-16):"));
-    switch (Serial.parseInt()) {
-        case 1L:
-            sendRaw(POWER, 68U, 38U);
-            break;
-        case 2L:
-            sendRaw(OPEN_CLOSE, 68U, 38U);
-            break;
-        case 3L:
-            sendRaw(HOME, 68U, 38U);
-            break;
-        case 4L:
-            sendRaw(DISC_MENU, 68U, 38U);
-            break;
-        case 5L:
-            sendRaw(CURSOR_ENTER, 68U, 38U);
-            break;
-        case 6L:
-            sendRaw(CURSOR_UP, 68U, 38U);
-            break;
-        case 7L:
-            sendRaw(CURSOR_DOWN, 68U, 38U);
-            break;
-        case 8L:
-            sendRaw(CURSOR_LEFT, 68U, 38U);
-            break;
-        case 9L:
-            sendRaw(CURSOR_RIGHT, 68U, 38U);
-            break;
-        case 10L:
-            sendRaw(PLAY, 68U, 38U);
-            break;
-        case 11L:
-            sendRaw(PAUSE, 68U, 38U);
-            break;
-        case 12L:
-            sendRaw(STOP, 68U, 38U);
-            break;
-        case 13L:
-            sendRaw(SCAN_BW, 68U, 38U);
-            break;
-        case 14L:
-            sendRaw(SCAN_FW, 68U, 38U);
-            break;
-        case 15L:
-            sendRaw(TRACK_NEXT, 68U, 38U);
-            break;
-        case 16L:
-            sendRaw(TRACK_PREV, 68U, 38U);
-            break;
+    if (irrecv.decode(&results)) {
+        Serial.print(F("Received signal with hex data: "));
+        Serial.println(results.value, HEX);
+        switch (results.value) {
+            case 0x1000E0FL:
+                sendRaw(POWER, 68U, 38U);
+                break;
+            case 0x1004E4FL:
+                sendRaw(OPEN_CLOSE, 68U, 38U);
+                break;
+            case 0x1008E8FL:
+                sendRaw(HOME, 68U, 38U);
+                break;
+            case 0x100CECFL:
+                sendRaw(DISC_MENU, 68U, 38U);
+                break;
+            case 0x1009293L:
+                sendRaw(CURSOR_ENTER, 68U, 38U);
+                break;
+            case 0x1005253L:
+                sendRaw(CURSOR_UP, 68U, 38U);
+                break;
+            case 0x100D2D3L:
+                sendRaw(CURSOR_DOWN, 68U, 38U);
+                break;
+            case 0x1007273L:
+                sendRaw(CURSOR_LEFT, 68U, 38U);
+                break;
+            case 0x100F2F3L:
+                sendRaw(CURSOR_RIGHT, 68U, 38U);
+                break;
+            case 0x1900392L:
+                sendRaw(PLAY, 68U, 38U);
+                break;
+            case 0x1908312L:
+                sendRaw(PAUSE, 68U, 38U);
+                break;
+            case 0x19043D2L:
+                sendRaw(STOP, 68U, 38U);
+                break;
+            case 0x19023B2L:
+                sendRaw(SCAN_BW, 68U, 38U);
+                break;
+            case 0x190C352L:
+                sendRaw(SCAN_FW, 68U, 38U);
+                break;
+            case 0x190BB2AL:
+                sendRaw(TRACK_NEXT, 68U, 38U);
+                break;
+            case 0x1903BAAL:
+                sendRaw(TRACK_PREV, 68U, 38U);
+                break;
+        }
+        irrecv.enableIRIn();
     }
+    delay(RECV_DELAY);
 }
